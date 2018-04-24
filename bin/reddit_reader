@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Neox\Reddit\RedditCommand;
+
+$application = new Symfony\Component\Console\Application();
+
+$application->setDefaultCommand('reddit');
+$application->add(new RedditCommand());
+
+$application->run();
