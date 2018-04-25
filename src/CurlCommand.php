@@ -24,6 +24,7 @@ class CurlCommand extends Command
                 if (!is_float($response)) {
                     $output->write($response);
                 }
+                return $response;
             }, function () use (&$returnCode) {
                 $returnCode = 1;
             });
@@ -31,7 +32,3 @@ class CurlCommand extends Command
         return $returnCode;
     }
 }
-
-$application = new \Symfony\Component\Console\Application();
-$application->add(new CurlCommand());
-$application->run();

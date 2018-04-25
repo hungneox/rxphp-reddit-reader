@@ -4,15 +4,23 @@ namespace Neox\Reddit;
 
 use Rx\Disposable\CompositeDisposable;
 
+/**
+ * Class CurlObservable
+ * @package Neox\Reddit
+ */
 class CurlObservable extends \Rx\Observable
 {
-
+    /**
+     * @var string
+     */
     private $url;
-    private $response;
 
+    /**
+     * @var array
+     */
     private $observers;
 
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->url = $url;
     }
@@ -34,31 +42,41 @@ class CurlObservable extends \Rx\Observable
         return $response;
     }
 
-    public function _subscribe(\Rx\ObserverInterface $obsr): \Rx\DisposableInterface
+    /**
+     * @param \Rx\ObserverInterface $observer
+     * @return \Rx\DisposableInterface
+     */
+    public function _subscribe(\Rx\ObserverInterface $observer): \Rx\DisposableInterface
     {
-        $disposable = parent::subscribe($obsr);
+        $scheduler = new \Rx\Scheduler\ImmediateScheduler();
 
-        $sched = new \Rx\Scheduler\ImmediateScheduler();
+        $this->observers[] = $observer;
 
-        $scheduledDisposable = $sched->schedule(function () use ($obsr) {
+        $scheduledDisposable = $scheduler->schedule(function () use ($observer) {
             $response = $this->startDownload();
 
             if ($response) {
-                $obsr->onNext($response);
-                $obsr->onCompleted();
+                $observer->onNext($response);
+                $observer->onCompleted();
             } else {
-                $e = new \Exception('Unable to download ' . $this->url);
-                $obsr->onError($e);
+                $observer->onError(new \Exception('Unable to download ' . $this->url));
             }
         });
 
-        return new CompositeDisposable([$disposable, $scheduledDisposable]);
+        return new CompositeDisposable([$scheduledDisposable]);
     }
 
-    private function progress($res, $downtotal, $down, $uptotal, $up)
+    /**
+     * @param $resource
+     * @param $downloadTotal
+     * @param $downloadNow
+     * @param $uploadTotal
+     * @param $uploadNow
+     */
+    private function progress($resource, $downloadTotal, $downloadNow, $uploadTotal, $uploadNow)
     {
-        if ($downtotal > 0) {
-            $percentage = sprintf("%.2f", $down / $downtotal * 100);
+        if ($downloadTotal > 0) {
+            $percentage = sprintf("%.2f", $downloadNow / $downloadTotal * 100);
             foreach ($this->observers as $observer) {
                 /** @var \Rx\ObserverInterface $observer */
                 $observer->onNext(floatval($percentage));

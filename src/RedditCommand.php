@@ -108,7 +108,7 @@ class RedditCommand extends Command
 
     protected function refreshList()
     {
-        $this->process = new Process('curl -A "Mozilla/5.0" -XGET  ' . sprintf(self::API_URL, $this->subreddit));
+        $this->process = new Process('./bin/reddit_reader curl ' . sprintf(self::API_URL, $this->subreddit));
         $this->process->start();
 
         $this->intervalObservable
@@ -124,6 +124,7 @@ class RedditCommand extends Command
                 $response = json_decode($jsonString, true);
                 $articles = $response['data']['children'];
                 $this->clearScreen();
+
                 foreach ($articles as $i => $entry) {
                     $this->output->writeln("<info>${i}</info> " . $entry['data']['title']);
                 }
