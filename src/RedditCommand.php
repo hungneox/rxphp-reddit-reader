@@ -28,10 +28,7 @@ class RedditCommand extends Command
 
     /** @var OutputInterface */
     private $output;
-
-    private $scheduler;
-
-    private $loop;
+    
     /** @var Process */
     private $process;
 
