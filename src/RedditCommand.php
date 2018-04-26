@@ -131,7 +131,7 @@ class RedditCommand extends Command
 
                 $this->printHelp();
                 $template = ', <info>[%d-%d]</info>: Read article';
-                $this->output->writeln(sprintf($template, 0, count($articles)));
+                $this->output->writeln(sprintf($template, 0, count($articles) - 1));
 
                 $this->chooseArticleDetail($articles);
             });
@@ -179,7 +179,7 @@ class RedditCommand extends Command
 
     protected function clearScreen()
     {
-        $this->output->write(sprintf("\033\143"));
+        $this->output->write(sprintf("\033[2J\033[3J\033[1;1H"));
     }
 
 }

@@ -6,10 +6,10 @@ use Rx\DisposableInterface;
 use Rx\ObservableInterface as ObservableI;
 use Rx\Observer\CallbackObserver;
 use Rx\ObserverInterface as ObserverI;
-use Rx\Operator\OperatorInterface as OperatorI;
+use Rx\Operator\OperatorInterface;
 use Rx\SchedulerInterface as SchedulerI;
 
-class JsonDecodeOperator implements OperatorI
+class JsonDecodeOperator implements OperatorInterface
 {
     public function __invoke(ObservableI $observable, ObserverI $observer, SchedulerI $scheduler = null): DisposableInterface
     {
